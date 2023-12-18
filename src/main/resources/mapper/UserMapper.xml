@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.se.classmategalaxy.mapper.UserMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.se.classmategalaxy.entity.User">
+        <id column="userId" property="userId" />
+        <result column="account" property="account" />
+        <result column="password" property="password" />
+        <result column="nickname" property="nickname" />
+        <result column="phone" property="phone" />
+        <result column="email" property="email" />
+        <result column="headPhoto" property="headPhoto" />
+        <result column="token" property="token" />
+        <result column="personalTag" property="personalTag" />
+        <result column="lastLogin" property="lastLogin" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        userId,account,password,nickname,phone,email,headPhoto,token,personalTag,lastLogin
+    </sql>
+</mapper>
