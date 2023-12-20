@@ -20,7 +20,7 @@ public interface UserMapper extends BaseMapper<User> {
     public User getByAccount(String account);
 
     @Select("INSERT INTO user (account, password,phone,email,personal_tag)" +
-            "VALUES (#{registerInfo.account}, #{hashedPassword},#{registerInfo.phone},#{registerInfo.email},#{registerInfo.personal_tag})")
+            "VALUES (#{registerInfo.account}, #{hashedPassword},#{registerInfo.phone},#{registerInfo.email},#{registerInfo.personalTag})")
     public void saveRegisterInfo(RegisterInfo registerInfo, String hashedPassword);
 
     @Update("UPDATE user SET last_login = CURRENT_TIMESTAMP WHERE user_id = #{userId}")
