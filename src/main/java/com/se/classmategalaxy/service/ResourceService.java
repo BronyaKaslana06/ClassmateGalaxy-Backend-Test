@@ -2,6 +2,7 @@ package com.se.classmategalaxy.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -14,5 +15,7 @@ import java.util.HashMap;
  */
 public interface ResourceService {
 
-    public HashMap<String,Object> uploadFile(MultipartFile localFile, int userId, int planetId) throws IOException;
+    HashMap<String,Object> uploadFile(MultipartFile localFile, int userId, int planetId) throws IOException;
+
+    void downloadFile(int resourceId, HttpServletResponse response) throws IOException;
 }

@@ -3,18 +3,26 @@ package com.se.classmategalaxy.service.impl;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicSessionCredentials;
-import com.qcloud.cos.model.PutObjectRequest;
-import com.qcloud.cos.model.PutObjectResult;
+import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
+import com.qcloud.cos.utils.IOUtils;
 import com.se.classmategalaxy.entity.Resource;
 import com.se.classmategalaxy.mapper.ResourceMapper;
 import com.se.classmategalaxy.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -86,5 +94,35 @@ public class ResourceServiceImpl implements ResourceService {
             result.put("status", "0");
         }
         return result;
+    }
+
+    @Override
+    public void downloadFile(int resourceId, HttpServletResponse response) throws IOException {
+        Resource downloadResource=resourceMapper.selectById(resourceId);
+        String key=downloadResource.getResourceKey();
+        // 方法1 获取下载输入流
+        String bucketName = "se2023-1320924912";
+        GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, key);
+        COSObject cosObject = cosClient.getObject(getObjectRequest);
+        COSObjectInputStream cosObjectInput = cosObject.getObjectContent();
+        // 下载对象的 CRC64
+        String crc64Ecma = cosObject.getObjectMetadata().getCrc64Ecma();
+        // 读取文件内容
+        byte[] fileContent = IOUtils.toByteArray(cosObjectInput);
+
+        // 关闭输入流
+        cosObjectInput.close();
+
+        // 设置响应头
+        response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        String encodedFilename = URLEncoder.encode(downloadResource.getName(), StandardCharsets.UTF_8.toString());
+        response.setHeader("Content-Disposition", "attachment; filename="+encodedFilename); // 设置下载文件的名称
+        // 将文件内容写入响应流
+        try (OutputStream outputStream = response.getOutputStream()) {
+            outputStream.write(fileContent);
+            outputStream.flush();
+        } catch (IOException e) {
+            // 处理异常
+        }
     }
 }

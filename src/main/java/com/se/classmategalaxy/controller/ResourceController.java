@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import com.qcloud.cos.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
 import java.io.File;
@@ -34,5 +35,11 @@ public class ResourceController {
     @ApiOperation(notes="用户上传个人资源分享，请求参数为File,返回大小为KB",value="用户上传资源接口")
     public HashMap<String,Object> uploadFile(@RequestPart MultipartFile localFile,@RequestParam int userId,@RequestParam int planetId) throws IOException {
          return resourceService.uploadFile(localFile,userId,planetId);
+    }
+
+    @GetMapping("/download")
+    @ApiOperation(notes="请求参数为resourceId",value="用户下载资源接口")
+    public void downloadFile(@RequestParam int resourceId, HttpServletResponse response) throws IOException {
+        resourceService.downloadFile(resourceId, response);
     }
 }
