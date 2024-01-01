@@ -1,6 +1,5 @@
 package com.se.classmategalaxy.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.se.classmategalaxy.dto.RegisterInfo;
 import com.se.classmategalaxy.dto.UserDetailDto;
 import com.se.classmategalaxy.entity.User;
@@ -66,8 +65,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean updateLastLoginTime(int userId) {
-        int rowsAffected = userMapper.updateLastLoginTime(userId);
+    public Boolean updateLoginTime(int userId) {
+        int rowsAffected = userMapper.updateLoginTime(userId);
         return rowsAffected > 0;
     }
 
@@ -92,6 +91,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> selectUserPage(String keyword,int pageNum,int pageSize){
-        return userMapper.selectUserPage(keyword, pageNum, pageSize);
+        int start=(pageNum-1)*pageSize;
+        return userMapper.selectUserPage(keyword, start, pageSize);
     }
 }

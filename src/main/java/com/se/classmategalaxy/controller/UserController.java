@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -93,7 +94,7 @@ public class UserController {
             loginResult.put("user",user);
 
             //更新上一次登录时间
-            if(userService.updateLastLoginTime(user.getUserId())){
+            if(userService.updateLoginTime(user.getUserId())){
                 loginResult.put("message","Login time has been updated.");
             }
             else{
@@ -109,11 +110,17 @@ public class UserController {
     }
 
 
-    @GetMapping("/find")
+    @GetMapping("/findById")
     @ApiOperation(notes = "根据user_id获取用户信息", value = "根据user_id获取用户信息")
     public UserDetailDto findUserById(@RequestParam Integer userId){
         UserDetailDto userDetailDto=userService.selectById(userId);
         return userDetailDto;
+    }
+
+    @GetMapping("/page")
+    @ApiOperation(notes = "", value = "分页搜索用户")
+    public List<User> findUserByPage(@RequestParam String keyword, @RequestParam int paegNum, @RequestParam int pageSize){
+        return userService.selectUserPage(keyword, paegNum, pageSize);
     }
 
     @GetMapping("/count")

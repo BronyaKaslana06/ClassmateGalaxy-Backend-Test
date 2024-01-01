@@ -14,7 +14,7 @@ public interface UserService {
     User getByAccount(String account);
     void registerUser(RegisterInfo registerInfo);
     boolean authenticateUser(String inputPassword, String hashedPasswordFromDatabase);
-    Boolean updateLastLoginTime(int userId);
+    Boolean updateLoginTime(int userId);
     UserDetailDto selectById(int userId);
     List<User> selectUserPage(String keyword,int pageNum,int pageSize);
 

@@ -19,12 +19,13 @@ public interface UserMapper extends BaseMapper<User> {
     @Select("select * from user where account = #{account}")
     public User getByAccount(String account);
 
-    @Select("INSERT INTO user (account, password,phone,email,personal_tag)" +
-            "VALUES (#{registerInfo.account}, #{hashedPassword},#{registerInfo.phone},#{registerInfo.email},#{registerInfo.personalTag})")
+    @Select("INSERT INTO user (account, password,nickname,phone,email,personal_tag)" +
+            "VALUES (#{registerInfo.account}, #{hashedPassword},'小星',#{registerInfo.phone},#{registerInfo.email},#{registerInfo.personalTag})")
     public void saveRegisterInfo(RegisterInfo registerInfo, String hashedPassword);
 
     @Update("UPDATE user SET last_login = CURRENT_TIMESTAMP WHERE user_id = #{userId}")
-    public int updateLastLoginTime(int userId);
+    public int updateLoginTime(int userId);
 
-    public List<User> selectUserPage(String keyword,int pageNum,int pageSize);
+    @Select("SELECT * from user where nickname LIKE CONCAT('%', #{keyword}, '%') limit #{start},#{pageSize} ")
+    public List<User> selectUserPage(String keyword, int start, int pageSize);
 }
