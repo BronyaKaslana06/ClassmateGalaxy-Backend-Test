@@ -25,7 +25,7 @@ import java.util.HashMap;
  * @create 2024/1/1 20:32
  */
 @RestController
-@RequestMapping("/source")
+@RequestMapping("/resource")
 public class ResourceController {
 
     @Autowired
@@ -33,8 +33,8 @@ public class ResourceController {
 
     @PostMapping("/upload")
     @ApiOperation(notes="用户上传个人资源分享，请求参数为File,返回大小为KB",value="用户上传资源接口")
-    public HashMap<String,Object> uploadFile(@RequestPart MultipartFile localFile,@RequestParam int userId,@RequestParam int planetId) throws IOException {
-         return resourceService.uploadFile(localFile,userId,planetId);
+    public HashMap<String,Object> uploadFile(@RequestPart MultipartFile file,@RequestParam int userId,@RequestParam int planetId) throws IOException {
+         return resourceService.uploadFile(file,userId,planetId);
     }
 
     @GetMapping("/download")
