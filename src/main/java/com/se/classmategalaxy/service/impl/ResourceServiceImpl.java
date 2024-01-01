@@ -4,6 +4,7 @@ import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicSessionCredentials;
 import com.qcloud.cos.model.PutObjectRequest;
+import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.region.Region;
 import com.se.classmategalaxy.entity.Resource;
 import com.se.classmategalaxy.mapper.ResourceMapper;
@@ -66,6 +67,7 @@ public class ResourceServiceImpl implements ResourceService {
             // 将MultipartFile的内容写入临时文件
             localFile.transferTo(tempFile);
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key,tempFile);
+            PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
             result.put("status",1);
             Resource uploadResource=new Resource();
             uploadResource.setName(fileName);
