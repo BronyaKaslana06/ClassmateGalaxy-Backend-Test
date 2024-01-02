@@ -1,8 +1,6 @@
 package com.se.classmategalaxy.controller;
 
-import com.se.classmategalaxy.dto.LoginRequest;
-import com.se.classmategalaxy.dto.RegisterInfo;
-import com.se.classmategalaxy.dto.UserDetailDto;
+import com.se.classmategalaxy.dto.*;
 import com.se.classmategalaxy.entity.User;
 import com.se.classmategalaxy.service.UserRegisterValidatorService;
 import com.se.classmategalaxy.service.UserService;
@@ -110,12 +108,37 @@ public class UserController {
     }
 
 
-    @GetMapping("/findById")
-    @ApiOperation(notes = "根据user_id获取用户信息", value = "根据user_id获取用户信息")
-    public UserDetailDto findUserById(@RequestParam Integer userId){
-        UserDetailDto userDetailDto=userService.selectById(userId);
-        return userDetailDto;
+    @GetMapping("/getUserInfo")
+    @ApiOperation(notes = "根据user_id获取用户信息,tagList为标签列表", value = "根据user_id获取用户信息")
+    public HashMap<String,Object> findUserById(@RequestParam Integer userId){
+        return userService.selectById(userId);
     }
+
+    @PostMapping("/save-user-info")
+    @ApiOperation(notes = "更新用户信息，返回用户全部信息在data中", value = "修改保存用户的信息")
+    public HashMap<String,Object> updateUserInfo(@RequestBody UserUpdateDto userUpdateDto){
+        return userService.updateUserInfo(userUpdateDto);
+    }
+
+    @GetMapping("/getFollow")
+    @ApiOperation(notes = "根据user_id获取关注列表", value = "根据user_id获取用户关注列表")
+    public HashMap<String,Object> getFollow(@RequestParam Integer userId){
+        return userService.getFollow(userId);
+    }
+
+
+    @PostMapping("/cancelFollow")
+    @ApiOperation(notes = "成功status为1，失败为0", value = "取消关注")
+    public HashMap<String,Object> cancelFollow(@RequestBody FollowDto followDto){
+        return userService.cancelFollow(followDto);
+    }
+
+    @PostMapping("/addFollow")
+    @ApiOperation(notes = "成功status为1，失败为0", value = "新增关注关系")
+    public HashMap<String,Object> addFollow(@RequestBody FollowDto followDto){
+        return userService.addFollow(followDto);
+    }
+
 
     @GetMapping("/page")
     @ApiOperation(notes = "", value = "分页搜索用户")

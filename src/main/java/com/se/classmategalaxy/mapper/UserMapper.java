@@ -2,8 +2,10 @@ package com.se.classmategalaxy.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.se.classmategalaxy.dto.RegisterInfo;
+import com.se.classmategalaxy.dto.UserUpdateDto;
 import com.se.classmategalaxy.entity.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
@@ -14,18 +16,23 @@ import java.util.List;
 @Repository
 public interface UserMapper extends BaseMapper<User> {
     @Select("select count(*) from user")
-    public int getTotalUserCount();
+    int getTotalUserCount();
 
     @Select("select * from user where account = #{account}")
-    public User getByAccount(String account);
+    User getByAccount(String account);
 
     @Select("INSERT INTO user (account, password,nickname,phone,email,personal_tag)" +
             "VALUES (#{registerInfo.account}, #{hashedPassword},'小星',#{registerInfo.phone},#{registerInfo.email},#{registerInfo.personalTag})")
-    public void saveRegisterInfo(RegisterInfo registerInfo, String hashedPassword);
+    void saveRegisterInfo(RegisterInfo registerInfo, String hashedPassword);
 
     @Update("UPDATE user SET last_login = CURRENT_TIMESTAMP WHERE user_id = #{userId}")
-    public int updateLoginTime(int userId);
+    int updateLoginTime(int userId);
 
     @Select("SELECT * from user where nickname LIKE CONCAT('%', #{keyword}, '%') limit #{start},#{pageSize} ")
-    public List<User> selectUserPage(String keyword, int start, int pageSize);
+    List<User> selectUserPage(String keyword, int start, int pageSize);
+
+
+    @Update("UPDATE user set nickname=#{nickName},phone=#{phoneNumber},email=#{email},personal_tag=#{personalTag} where user_id=#{userId}")
+    @Options(useGeneratedKeys = true, keyColumn = "user_id", keyProperty = "userId")
+    int updateUserInfo(UserUpdateDto userUpdateDto);
 }
