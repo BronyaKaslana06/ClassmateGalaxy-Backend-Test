@@ -114,7 +114,7 @@ public class UserController {
         return userService.selectById(userId);
     }
 
-    @PostMapping("/save-user-info")
+    @PostMapping("/saveUserInfo")
     @ApiOperation(notes = "更新用户信息，返回用户全部信息在data中", value = "修改保存用户的信息")
     public HashMap<String,Object> updateUserInfo(@RequestBody UserUpdateDto userUpdateDto){
         return userService.updateUserInfo(userUpdateDto);
