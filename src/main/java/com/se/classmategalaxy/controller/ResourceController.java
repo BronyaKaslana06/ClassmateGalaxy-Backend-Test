@@ -1,20 +1,13 @@
 package com.se.classmategalaxy.controller;
 
-import com.qcloud.cos.auth.BasicSessionCredentials;
-import com.qcloud.cos.model.PutObjectRequest;
-import com.qcloud.cos.model.PutObjectResult;
-import com.qcloud.cos.region.Region;
 import com.se.classmategalaxy.service.ResourceService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.qcloud.cos.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.UUID;
-import java.io.File;
 import java.util.HashMap;
 
 /**
@@ -41,5 +34,11 @@ public class ResourceController {
     @ApiOperation(notes="请求参数为resourceId",value="用户下载资源接口")
     public void downloadFile(@RequestParam int resourceId, HttpServletResponse response) throws IOException {
         resourceService.downloadFile(resourceId, response);
+    }
+
+    @PostMapping("/uploadPhoto")
+    @ApiOperation(notes="用户上传个人图片，请求参数为File,返回大小为KB",value="用户上传图片接口")
+    public HashMap<String,Object> uploadPhoto(@RequestPart MultipartFile file) throws IOException {
+        return resourceService.uploadPhoto(file);
     }
 }

@@ -114,7 +114,7 @@ public class UserController {
         return userService.selectById(userId);
     }
 
-    @PostMapping("/save-user-info")
+    @PostMapping("/saveUserInfo")
     @ApiOperation(notes = "更新用户信息，返回用户全部信息在data中", value = "修改保存用户的信息")
     public HashMap<String,Object> updateUserInfo(@RequestBody UserUpdateDto userUpdateDto){
         return userService.updateUserInfo(userUpdateDto);
@@ -150,5 +150,11 @@ public class UserController {
     @ApiOperation(notes = "返回int类型数值，表示用户数", value = "获取软件用户总数")
     public int findTotalUserCount(){
         return userService.getTotalUserCount();
+    }
+
+    @PostMapping("/phoneLogin")
+    @ApiOperation(notes="用户通过手机登录，获取用户基本信息",value="用户手机号登录")
+    public HashMap<String,Object> loginByPhone(@RequestBody LoginRequest loginRequest){
+        return userService.loginByPhone(loginRequest);
     }
 }

@@ -1,9 +1,11 @@
 package com.se.classmategalaxy.service.impl;
 
 import com.se.classmategalaxy.dto.FollowDto;
+import com.se.classmategalaxy.dto.LoginRequest;
 import com.se.classmategalaxy.dto.RegisterInfo;
 import com.se.classmategalaxy.dto.UserUpdateDto;
 import com.se.classmategalaxy.entity.User;
+import com.se.classmategalaxy.entity.UserFollows;
 import com.se.classmategalaxy.mapper.FollowMapper;
 import com.se.classmategalaxy.mapper.UserMapper;
 import com.se.classmategalaxy.service.UserService;
@@ -162,9 +164,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public HashMap<String, Object> addFollow(FollowDto followDto) {
         HashMap<String,Object> result=new HashMap<>();
-        if (followMapper.checkIsFollow(followDto)>0) {
-            result.put("status",0);
-            result.put("message","新增关注失败，已存在对应关注关系");
+        UserFollows userFollows=followMapper.checkIsFollow(followDto);
+        if (userFollows!=null&&userFollows.getStatus()==0) {
+            followMapper.reFollow(followDto);
+            result.put("status",1);
+            result.put("message","重新关注成功");
         }
         else if(followMapper.addFollow(followDto)>0){
             result.put("status",1);
@@ -173,6 +177,23 @@ public class UserServiceImpl implements UserService {
         else{
             result.put("status",0);
             result.put("message","新增关注失败");
+        }
+        return result;
+    }
+
+
+    @Override
+    public HashMap<String, Object> loginByPhone(LoginRequest loginRequest) {
+        HashMap<String,Object> result=new HashMap<>();
+        int userId=userMapper.loginByPhone(loginRequest.getPhone());
+        if(userId>0) {
+            result.put("user", userMapper.selectById(userId));
+            result.put("status",1);
+            result.put("message","登录成功");
+        }
+        else {
+            result.put("status",0);
+            result.put("message","用户不存在");
         }
         return result;
     }

@@ -35,4 +35,8 @@ public interface UserMapper extends BaseMapper<User> {
     @Update("UPDATE user set nickname=#{nickName},phone=#{phoneNumber},email=#{email},personal_tag=#{personalTag} where user_id=#{userId}")
     @Options(useGeneratedKeys = true, keyColumn = "user_id", keyProperty = "userId")
     int updateUserInfo(UserUpdateDto userUpdateDto);
+
+    @Update("UPDATE user SET last_login = CURRENT_TIMESTAMP WHERE phone = #{phone}")
+    @Options(useGeneratedKeys = true, keyColumn = "user_id", keyProperty = "userId")
+    int loginByPhone(String phone);
 }

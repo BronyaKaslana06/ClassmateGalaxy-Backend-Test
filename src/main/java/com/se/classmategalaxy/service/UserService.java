@@ -1,8 +1,8 @@
 package com.se.classmategalaxy.service;
 
 import com.se.classmategalaxy.dto.FollowDto;
+import com.se.classmategalaxy.dto.LoginRequest;
 import com.se.classmategalaxy.dto.RegisterInfo;
-import com.se.classmategalaxy.dto.UserDetailDto;
 import com.se.classmategalaxy.dto.UserUpdateDto;
 import com.se.classmategalaxy.entity.User;
 
@@ -28,4 +28,6 @@ public interface UserService {
     HashMap<String, Object> cancelFollow(FollowDto followDto);
 
     HashMap<String, Object> addFollow(FollowDto followDto);
+
+    HashMap<String, Object> loginByPhone(LoginRequest loginRequest);
 }

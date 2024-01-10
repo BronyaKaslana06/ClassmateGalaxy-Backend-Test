@@ -31,9 +31,12 @@ public interface FollowMapper extends BaseMapper<UserFollows> {
     @Update("update user_follows set status=0 where follower_id=#{follower_id} and followed_id=#{followed_id}")
     int cancelFollow(FollowDto followDto);
 
+    @Update("update user_follows set status=1 where follower_id=#{follower_id} and followed_id=#{followed_id}")
+    int reFollow(FollowDto followDto);
+
     @Insert("INSERT INTO user_follows (follower_id, followed_id,status) VALUES (#{follower_id}, #{followed_id},1)")
     int addFollow(FollowDto followDto);
 
-    @Select("select count(*) from user_follows where follower_id=#{follower_id} and followed_id=#{followed_id} limit 1")
-    int checkIsFollow(FollowDto followDto);
+    @Select("select * from user_follows where follower_id=#{follower_id} and followed_id=#{followed_id} limit 1")
+    UserFollows checkIsFollow(FollowDto followDto);
 }

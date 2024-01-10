@@ -125,4 +125,42 @@ public class ResourceServiceImpl implements ResourceService {
             // 处理异常
         }
     }
+
+    @Override
+    public HashMap<String, Object> uploadPhoto(MultipartFile photo) throws IOException {
+        HashMap<String,Object> result=new HashMap<>();
+        // 获取文件的内容类型
+        String contentType = photo.getContentType();
+        if (contentType != null && contentType.startsWith("image/")) {
+            // 获取文件名称
+            String fileName = photo.getOriginalFilename();
+            result.put("fileName", fileName);
+            // 获取文件大小，以字节为单位
+            long fileSizeInBytes = photo.getSize();
+            // 将字节数转换为千字节（KB）
+            double fileSizeInKB = (double) fileSizeInBytes / 1024;
+            result.put("fileSize", fileSizeInKB);
+
+            // 指定文件将要存放的存储桶
+            String bucketName = "se2023-1320924912";
+            // 指定文件上传到 COS 上的路径，即对象键。例如对象键为 folder/picture.jpg，则表示将文件 picture.jpg 上传到 folder 路径下
+            // 生成唯一标识
+            String uniqueIdentifier = UUID.randomUUID().toString();
+            String key = "photo/"+uniqueIdentifier+"_"+fileName;
+            // 创建临时文件
+            File tempFile = File.createTempFile("temp", null);
+            // 将MultipartFile的内容写入临时文件
+            photo.transferTo(tempFile);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key,tempFile);
+            PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
+            result.put("status",1);
+           result.put("photoUrl",cosClient.getObjectUrl(bucketName, key));
+            return result;
+
+        } else {
+            result.put("message", "文件类型不为图片或图片为空");
+            result.put("status", "0");
+        }
+        return result;
+    }
 }

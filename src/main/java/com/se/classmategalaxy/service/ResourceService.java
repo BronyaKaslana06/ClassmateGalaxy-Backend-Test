@@ -18,4 +18,6 @@ public interface ResourceService {
     HashMap<String,Object> uploadFile(MultipartFile localFile, int userId, int planetId) throws IOException;
 
     void downloadFile(int resourceId, HttpServletResponse response) throws IOException;
+
+    HashMap<String, Object> uploadPhoto(MultipartFile file) throws IOException;
 }
