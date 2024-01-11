@@ -4,12 +4,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.se.classmategalaxy.dto.RegisterInfo;
 import com.se.classmategalaxy.dto.UserUpdateDto;
 import com.se.classmategalaxy.entity.User;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 @Mapper
@@ -39,4 +38,10 @@ public interface UserMapper extends BaseMapper<User> {
     @Update("UPDATE user SET last_login = CURRENT_TIMESTAMP WHERE phone = #{phone}")
     @Options(useGeneratedKeys = true, keyColumn = "user_id", keyProperty = "userId")
     int loginByPhone(String phone);
+
+    @Select("SELECT * FROM user WHERE user_id IN (#{userIds})")
+    List<User> selectBatchByIds(@Param("userIds") HashSet<Integer> userIds);
+
+    @Select("SELECT * from user")
+    List<User> selectAll();
 }

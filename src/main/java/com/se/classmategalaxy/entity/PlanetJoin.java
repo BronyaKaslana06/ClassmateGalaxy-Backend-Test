@@ -7,33 +7,29 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 /**
  * @author wyx20
  * @version 1.0
- * @title planet
+ * @title planetJoin
  * @description
- * @create 2023/12/25 19:57
+ * @create 2024/1/11 21:14
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Planet {
-    @TableId(type= IdType.AUTO)
+public class PlanetJoin {
+    @TableId(type = IdType.AUTO)
+    private Integer joinId;
+    private Integer senderId;
+    private Integer accepterId;
+    private Integer type;
     private Integer planetId;
+    private String reason;
+    private Integer status;
+    @TableField(exist = false)
+    private String userName;
+    @TableField(exist = false)
     private String planetName;
-    private Integer memberNum;
-    private Timestamp createTime;
-    private String description;
-    private String picture;
-    private Integer ownerId;
-    private String planetTags;
-
-    @TableField(exist = false)
-    private List<String> tagList;
-
-    @TableField(exist = false)
-    private String briefIntroduction;
 }

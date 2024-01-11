@@ -26,4 +26,5 @@ public class Resource {
     private Float score;
     private Integer downloadCount;
     private Double Size;
+    private String introduction;
 }

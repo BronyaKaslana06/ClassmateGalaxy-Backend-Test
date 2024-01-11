@@ -24,7 +24,7 @@ public class Post {
     private String title;
     private String content;
     private Integer likeNum;
-    private String collectNum;
+    private Integer collectNum;
     private Integer viewNum;
     private String photoUrl;
     private Integer visibility;

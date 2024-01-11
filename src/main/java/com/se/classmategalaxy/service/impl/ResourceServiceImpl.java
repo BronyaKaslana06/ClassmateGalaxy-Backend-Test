@@ -6,8 +6,11 @@ import com.qcloud.cos.auth.BasicSessionCredentials;
 import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
 import com.qcloud.cos.utils.IOUtils;
+import com.se.classmategalaxy.entity.Post;
 import com.se.classmategalaxy.entity.Resource;
+import com.se.classmategalaxy.entity.User;
 import com.se.classmategalaxy.mapper.ResourceMapper;
+import com.se.classmategalaxy.mapper.UserMapper;
 import com.se.classmategalaxy.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -23,8 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author wyx20
@@ -51,8 +53,11 @@ public class ResourceServiceImpl implements ResourceService {
     @Autowired
     private ResourceMapper resourceMapper;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @Override
-    public HashMap<String, Object> uploadFile(MultipartFile localFile, int userId, int planetId) throws IOException {
+    public HashMap<String, Object> uploadFile(MultipartFile localFile, int userId, int planetId,String introduction) throws IOException {
         HashMap<String,Object> result=new HashMap<>();
         if (!localFile.isEmpty()) {
             // 获取文件名称
@@ -83,6 +88,7 @@ public class ResourceServiceImpl implements ResourceService {
             uploadResource.setResourceKey(key);
             uploadResource.setUserId(userId);
             uploadResource.setPlanetId(planetId);
+            uploadResource.setIntroduction(introduction);
             resourceMapper.uploadFile(uploadResource);
             int resourceId=uploadResource.getResourceId();
             result.put("resourceId",resourceId);
@@ -112,6 +118,9 @@ public class ResourceServiceImpl implements ResourceService {
 
         // 关闭输入流
         cosObjectInput.close();
+
+        //更新下载次数+1
+        resourceMapper.addDownloadCount(resourceId);
 
         // 设置响应头
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
@@ -161,6 +170,55 @@ public class ResourceServiceImpl implements ResourceService {
             result.put("message", "文件类型不为图片或图片为空");
             result.put("status", "0");
         }
+        return result;
+    }
+
+    @Override
+    public HashMap<String, Object> getPlanetResources(int planetId, int pageNum, int pageSize, int userId) {
+        HashMap<String,Object> result=new HashMap<>();
+        int start=(pageNum-1)*pageSize;
+        int totalNum=resourceMapper.selectPlanetCount(planetId);
+        List<Resource> resourceList=resourceMapper.selectPageByPlanet(planetId,start,pageSize,userId);
+        List<HashMap> resourceWithPublishers=new ArrayList<>();
+        for(Resource resource:resourceList){
+            HashMap<String,Object> resourceWithPublisher=new HashMap<>();
+            resourceWithPublisher.put("resourceInfo",resource);
+            User publisher=userMapper.selectById(userId);
+            resourceWithPublisher.put("publisher",publisher.getNickname());
+            String introduction=resource.getIntroduction();
+            if(introduction!=null) {
+                if(introduction.length()<100){
+                    resourceWithPublisher.put("introduction", introduction.substring(0, introduction.length()));
+                }
+                else {
+                    resourceWithPublisher.put("introduction", introduction.substring(0, 100) + "...");
+                }
+            }
+            else{
+                resourceWithPublisher.put("introduction", "作者很懒，没有写简介哦");
+            }
+            resourceWithPublishers.add(resourceWithPublisher);
+        }
+        result.put("status",1);
+        result.put("resourceList",resourceWithPublishers);
+        result.put("totalNum",totalNum);
+        return result;
+    }
+
+    @Override
+    public HashMap<String, Object> getResourceInfo(int resourceId, int userId) {
+        HashMap<String,Object> result=new HashMap<>();
+        Resource resource=resourceMapper.selectById(resourceId);
+        result.put("resource",resource);
+        User publisher=userMapper.selectById(resource.getUserId());
+        List<String> tagsList = publisher.getPersonalTag() != null && !publisher.getPersonalTag().isEmpty() ?
+                Arrays.asList(publisher.getPersonalTag().split(",")) :
+                Collections.emptyList();
+
+        publisher.setTagList(tagsList);
+        result.put("publisher",publisher);
+        result.put("status",1);
+        result.put("message","获取资源信息成功");
         return result;
     }
 }

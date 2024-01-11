@@ -15,9 +15,13 @@ import java.util.HashMap;
  */
 public interface ResourceService {
 
-    HashMap<String,Object> uploadFile(MultipartFile localFile, int userId, int planetId) throws IOException;
+    HashMap<String,Object> uploadFile(MultipartFile localFile, int userId, int planetId,String introduction) throws IOException;
 
     void downloadFile(int resourceId, HttpServletResponse response) throws IOException;
 
     HashMap<String, Object> uploadPhoto(MultipartFile file) throws IOException;
+
+    HashMap<String, Object> getPlanetResources(int planetId, int pageNum, int pageSize, int userId);
+
+    HashMap<String, Object> getResourceInfo(int resourceId, int userId);
 }

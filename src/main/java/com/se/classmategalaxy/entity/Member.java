@@ -1,6 +1,5 @@
 package com.se.classmategalaxy.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
@@ -13,27 +12,24 @@ import java.util.List;
 /**
  * @author wyx20
  * @version 1.0
- * @title planet
+ * @title Member
  * @description
- * @create 2023/12/25 19:57
+ * @create 2024/1/11 11:21
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Planet {
-    @TableId(type= IdType.AUTO)
+public class Member {
+    @TableId
+    private Integer membershipId;
     private Integer planetId;
+    private Timestamp joinTime;
+    private Integer userId;
+    private String userName;
     private String planetName;
-    private Integer memberNum;
-    private Timestamp createTime;
-    private String description;
-    private String picture;
-    private Integer ownerId;
-    private String planetTags;
-
+    @TableField(exist = false)
+    private String userPhoto;
     @TableField(exist = false)
     private List<String> tagList;
 
-    @TableField(exist = false)
-    private String briefIntroduction;
 }
