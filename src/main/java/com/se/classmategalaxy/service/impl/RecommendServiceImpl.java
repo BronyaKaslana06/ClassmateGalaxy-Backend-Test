@@ -2,6 +2,7 @@ package com.se.classmategalaxy.service.impl;
 
 import com.se.classmategalaxy.entity.Member;
 import com.se.classmategalaxy.entity.Planet;
+import com.se.classmategalaxy.entity.User;
 import com.se.classmategalaxy.entity.UserFollows;
 import com.se.classmategalaxy.mapper.FollowMapper;
 import com.se.classmategalaxy.mapper.MemberMapper;
@@ -120,12 +121,19 @@ public class RecommendServiceImpl implements RecommendService {
             recommendedPlanets.addAll(planetMapper.selectLikePlanet(tag));
         }
 
+        List<Planet> planetList=planetMapper.selectAll();
+        HashMap<Integer,Planet> planetMap=new HashMap<>();
+        for(Planet planet : planetList){
+            planetMap.put(planet.getPlanetId(),planet);
+        }
+
         //还可以根据关注人加入的推荐
         List<Integer> followedIds=followMapper.getFollowedId(userId);
         for(Integer followedId : followedIds){
             List<Integer> planetIds=memberMapper.getPlanetsByUserId(followedId);
             for(Integer planetId : planetIds){
-                recommendedPlanets.add(planetMapper.selectById(planetId));
+                recommendedPlanets.add(planetMap.get(planetId));
+//                recommendedPlanets.add(planetMapper.selectById(planetId));
             }
         }
 
