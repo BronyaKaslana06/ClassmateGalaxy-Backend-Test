@@ -32,7 +32,7 @@ public interface MemberMapper extends BaseMapper<Member> {
     @Select("select COUNT(*) from member where user_id=#{userId} and planet_id=#{planetId} limit 1")
     Integer checkIfJoined(Integer planetId, Integer userId);
 
-    @Select("SELECT * from member where planet_id=#{planetId} limit 5")
+    @Select("SELECT * from member where planet_id=#{planetId} ")
     List<Member> selectMemberByPlanet(int planetId);
 
     @Insert("INSERT INTO member (planet_id,user_id,planet_name,user_name) values (#{planetId},#{userId},#{planetName},#{userName})")

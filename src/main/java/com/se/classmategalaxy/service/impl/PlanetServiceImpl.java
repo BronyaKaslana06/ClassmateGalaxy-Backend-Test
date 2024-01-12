@@ -12,6 +12,8 @@ import com.se.classmategalaxy.service.PlanetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -75,7 +77,11 @@ public class PlanetServiceImpl implements PlanetService {
                 Collections.emptyList();
         planet.setTagList(tagsList);
         result.put("planetInfo",planet);
-        result.put("owner",userMapper.selectById(planet.getOwnerId()));
+        User owner=userMapper.selectById(planet.getOwnerId());
+        String ownerTag= owner.getPersonalTag();
+        owner.setTagList((ownerTag != null && !ownerTag.isEmpty()) ?
+                Arrays.asList(ownerTag.split(",")) : new ArrayList<>());
+        result.put("owner",owner);
         int postNum=postMapper.selectPlanetCount(planetId);
         result.put("postNum",postNum);
         int resourceNum=resourceMapper.selectPlanetCount(planetId);
@@ -90,6 +96,16 @@ public class PlanetServiceImpl implements PlanetService {
                     Arrays.asList(personalTag.split(",")) : new ArrayList<>());
         }
         result.put("memberList",memberList);
+
+        // 获取当前日期
+        LocalDate currentDate = LocalDate.now();
+        // 获取 createTime 对应的 LocalDateTime
+        LocalDateTime createDateTime = planet.getCreateTime().toLocalDateTime();
+        // 获取 createTime 的日期部分
+        LocalDate createDate = createDateTime.toLocalDate();
+        // 计算两个日期之间的天数差
+        long daysDiff = currentDate.toEpochDay() - createDate.toEpochDay();
+        result.put("days",daysDiff+1);
         result.put("top2Posts",postMapper.selectPlanetTop(planetId));
         return result;
     }

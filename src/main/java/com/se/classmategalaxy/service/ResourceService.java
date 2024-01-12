@@ -1,5 +1,6 @@
 package com.se.classmategalaxy.service;
 
+import com.se.classmategalaxy.entity.Evaluate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,4 +25,6 @@ public interface ResourceService {
     HashMap<String, Object> getPlanetResources(int planetId, int pageNum, int pageSize, int userId);
 
     HashMap<String, Object> getResourceInfo(int resourceId, int userId);
+
+    HashMap<String, Object> evaluateResource(Evaluate evaluate);
 }

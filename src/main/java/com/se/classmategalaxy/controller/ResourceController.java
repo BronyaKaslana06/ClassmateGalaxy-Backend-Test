@@ -1,5 +1,6 @@
 package com.se.classmategalaxy.controller;
 
+import com.se.classmategalaxy.entity.Evaluate;
 import com.se.classmategalaxy.service.ResourceService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +50,15 @@ public class ResourceController {
     }
 
     @GetMapping("/planet")
-    @ApiOperation(notes = "根据指定pageNum,pageSize获取指定星球内资源列表", value = "分页获取星球内的所有帖子")
+    @ApiOperation(notes = "根据指定pageNum,pageSize获取指定星球内资源列表", value = "分页获取星球内的所有资源")
     public HashMap<String,Object> getPlanetResources(@RequestParam int planetId,@RequestParam int pageNum,@RequestParam int pageSize,@RequestParam int userId){
         return resourceService.getPlanetResources(planetId,pageNum,pageSize,userId);
     }
 
+    @PostMapping("/evaluate")
+    @ApiOperation(notes="用户评价资源，更新评分",value="用户评价资源")
+    public HashMap<String,Object> evaluateResource(@RequestBody Evaluate evaluate) {
+        return resourceService.evaluateResource(evaluate);
+    }
 
 }

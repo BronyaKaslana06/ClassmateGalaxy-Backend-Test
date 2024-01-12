@@ -29,4 +29,10 @@ public interface ResourceMapper extends BaseMapper<Resource> {
 
     @Update("UPDATE resource SET download_count = download_count + 1 WHERE resource_id = #{resourceId} ")
     void addDownloadCount(int resourceId);
+
+    @Select("SELECT * from resource where planet_id=#{planetId} order by download_count desc limit 5")
+    List<Resource> selectTop(int planetId);
+
+    @Select("UPDATE resource set score=#{average} where resource_id=#{resourceId}")
+    int updateScore(Integer resourceId, Float average);
 }

@@ -69,13 +69,13 @@ public class PlanetController {
 
     @GetMapping("/getApplyList")
     @ApiOperation(notes = "返回申请列表", value = "星主查看申请列表")
-    public HashMap<String,Object> applyForPlanet(@RequestParam int userId,@RequestParam int planetId){
+    public HashMap<String,Object> getApplyList(@RequestParam int userId,@RequestParam int planetId){
         return planetService.getApplyList(userId,planetId);
     }
 
     @GetMapping("/getInviteList")
     @ApiOperation(notes = "请求参数为userId,返回列表具体信息", value = "用户个人查看邀请自己的列表")
-    public HashMap<String,Object> applyForPlanet(@RequestParam int userId){
+    public HashMap<String,Object> getInviteList(@RequestParam int userId){
         return planetService.getInviteList(userId);
     }
 

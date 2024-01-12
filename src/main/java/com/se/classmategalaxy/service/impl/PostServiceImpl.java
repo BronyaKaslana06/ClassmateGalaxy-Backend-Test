@@ -42,6 +42,9 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PlanetMapper planetMapper;
 
+    @Autowired
+    private FollowMapper followMapper;
+
     @Override
     public HashMap<String, Object> getPlanetPosts(int planetId, int pageNum, int pageSize,int userId) {
         HashMap<String,Object> result=new HashMap<>();
@@ -52,7 +55,7 @@ public class PostServiceImpl implements PostService {
         for(Post post:postList){
             HashMap<String,Object> postWithPublisher=new HashMap<>();
             postWithPublisher.put("postInfo",post);
-            User publisher=userMapper.selectById(userId);
+            User publisher=userMapper.selectById(post.getAuthorId());
             postWithPublisher.put("author",publisher.getNickname());
             String textResult=removeHtmlTags(post.getContent()).replaceAll("&nbsp;", "");
             postWithPublisher.put("description",textResult.substring(0, Math.min(textResult.length(), 100))+"...");
@@ -88,6 +91,8 @@ public class PostServiceImpl implements PostService {
             result.put("author",userMapper.selectById(post.getAuthorId()));
             result.put("isLiked",likesMapper.checkIfLiked(postId,userId)>0);
             result.put("isCollected",collectsMapper.checkIfCollected(postId,userId)>0);
+
+            result.put("isFollowed",followMapper.checkIsFollow(new FollowDto(userId,post.getAuthorId()))!=null);
             result.put("deletePermission",post.getAuthorId()==userId);
             //评论与回复列表
             HashMap<String,Object> commentResult=new HashMap<>();

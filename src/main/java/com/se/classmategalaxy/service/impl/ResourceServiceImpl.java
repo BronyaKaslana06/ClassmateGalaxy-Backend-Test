@@ -6,9 +6,11 @@ import com.qcloud.cos.auth.BasicSessionCredentials;
 import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
 import com.qcloud.cos.utils.IOUtils;
+import com.se.classmategalaxy.entity.Evaluate;
 import com.se.classmategalaxy.entity.Post;
 import com.se.classmategalaxy.entity.Resource;
 import com.se.classmategalaxy.entity.User;
+import com.se.classmategalaxy.mapper.EvaluateMapper;
 import com.se.classmategalaxy.mapper.ResourceMapper;
 import com.se.classmategalaxy.mapper.UserMapper;
 import com.se.classmategalaxy.service.ResourceService;
@@ -55,6 +57,9 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private EvaluateMapper evaluateMapper;
 
     @Override
     public HashMap<String, Object> uploadFile(MultipartFile localFile, int userId, int planetId,String introduction) throws IOException {
@@ -180,6 +185,8 @@ public class ResourceServiceImpl implements ResourceService {
         int totalNum=resourceMapper.selectPlanetCount(planetId);
         List<Resource> resourceList=resourceMapper.selectPageByPlanet(planetId,start,pageSize,userId);
         List<HashMap> resourceWithPublishers=new ArrayList<>();
+        List<Resource> topResources=resourceMapper.selectTop(planetId);
+        result.put("topResources",topResources);
         for(Resource resource:resourceList){
             HashMap<String,Object> resourceWithPublisher=new HashMap<>();
             resourceWithPublisher.put("resourceInfo",resource);
@@ -216,9 +223,30 @@ public class ResourceServiceImpl implements ResourceService {
                 Collections.emptyList();
 
         publisher.setTagList(tagsList);
+//        evaluateMapper.selectById()
         result.put("publisher",publisher);
         result.put("status",1);
         result.put("message","获取资源信息成功");
+        return result;
+    }
+
+    @Override
+    public HashMap<String, Object> evaluateResource(Evaluate evaluate) {
+        HashMap<String,Object> result=new HashMap<>();
+        if (evaluateMapper.addNewEvaluate(evaluate)>0){
+            List<Float> scoreList=evaluateMapper.selectByResource(evaluate.getResourceId());
+            Float average=0f;
+            for(Float score : scoreList){
+                average=average+score;
+            }
+            average=average/scoreList.size();
+            resourceMapper.updateScore(evaluate.getResourceId(),average);
+            result.put("status",1);
+            result.put("message","资源评价成功");
+        }else {
+            result.put("status",0);
+            result.put("message","资源评价失败");
+        }
         return result;
     }
 }
