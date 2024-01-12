@@ -223,7 +223,20 @@ public class ResourceServiceImpl implements ResourceService {
                 Collections.emptyList();
 
         publisher.setTagList(tagsList);
-//        evaluateMapper.selectById()
+        List<Evaluate> evaluateList=evaluateMapper.selectAllByResource(resourceId);
+        List<HashMap<String,Object>> evaluates=new ArrayList<>();
+        for(Evaluate evaluate : evaluateList){
+            HashMap<String,Object> evaluateResult=new HashMap<>();
+            evaluateResult.put("reason",evaluate.getReason());
+            evaluateResult.put("evaluateId",evaluate.getEvaluate_id());
+            evaluateResult.put("score",evaluate.getScore());
+            evaluateResult.put("userId",evaluate.getUserId());
+            User user=userMapper.selectById(evaluate.getUserId());
+            evaluateResult.put("userAvatar",user.getHeadPhoto());
+            evaluateResult.put("userName",user.getNickname());
+            evaluates.add(evaluateResult);
+        }
+        result.put("evaluateList",evaluates);
         result.put("publisher",publisher);
         result.put("status",1);
         result.put("message","获取资源信息成功");

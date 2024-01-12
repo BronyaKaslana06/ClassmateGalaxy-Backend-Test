@@ -22,4 +22,7 @@ public interface EvaluateMapper extends BaseMapper<Evaluate> {
 
     @Select("SELECT score from evaluate where resource_id=#{resourceId}")
     List<Float> selectByResource(Integer resourceId);
+
+    @Select("SELECT * from evaluate where resource_id=#{resourceId}")
+    List<Evaluate> selectAllByResource(int resourceId);
 }
