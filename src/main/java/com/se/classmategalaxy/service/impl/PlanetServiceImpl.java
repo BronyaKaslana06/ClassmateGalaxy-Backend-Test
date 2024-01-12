@@ -148,6 +148,7 @@ public class PlanetServiceImpl implements PlanetService {
         for (PlanetJoin planetJoin : planetJoins){
             planetJoin.setUserName(userMap.get(planetJoin.getSenderId()).getNickname());
             planetJoin.setPlanetName(planetMap.get(planetJoin.getPlanetId()).getPlanetName());
+            planetJoin.setUserId(planetJoin.getSenderId());
         }
         result.put("applyList",planetJoins);
         result.put("status",1);

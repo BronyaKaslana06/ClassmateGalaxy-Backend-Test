@@ -32,4 +32,6 @@ public class PlanetJoin {
     private String userName;
     @TableField(exist = false)
     private String planetName;
+    @TableField(exist = false)
+    private Integer userId;
 }
