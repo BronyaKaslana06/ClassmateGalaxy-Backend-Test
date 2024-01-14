@@ -118,7 +118,7 @@ public class RecommendServiceImpl implements RecommendService {
         //除了协同过滤之外，还要根据标签、名称匹配
         List<String> tags= Arrays.asList(userMapper.selectById(userId).getPersonalTag().split(","));;
         for(String tag : tags){
-            recommendedPlanets.addAll(planetMapper.selectLikePlanet(tag));
+            recommendedPlanets.addAll(planetMapper.selectPlanet(tag,userId));
         }
 
         List<Planet> planetList=planetMapper.selectAll();

@@ -26,8 +26,11 @@ public interface PlanetMapper extends BaseMapper<Planet> {
     @Insert("INSERT INTO planet (planet_name,description,picture,owner_id,planet_tags) values (#{planetName},#{description},#{picture},#{ownerId},#{planetTags})")
     Integer createPlanet(Planet planet);
 
-    @Select("SELECT * from planet where planet_name LIKE CONCAT('%', #{tag}, '%') or planet_tags LIKE CONCAT('%', #{tag}, '%') or description LIKE CONCAT('%', #{tag}, '%')")
+    @Select("SELECT * from planet where planet_name LIKE CONCAT('%', #{tag}, '%') or  description LIKE CONCAT('%', #{tag}, '%')")
     List<Planet> selectLikePlanet(String tag);
+
+    @Select("SELECT * from planet where planet_name LIKE CONCAT('%', #{tag}, '%') or  description LIKE CONCAT('%', #{tag}, '%') or  planet_tags LIKE CONCAT('%', #{tag}, '%') and owner_id!=#{userId}")
+    List<Planet> selectPlanet(String tag,Integer userId);
 
     @Insert("INSERT INTO planet_join (planet_id,sender_id,accepter_id,reason,type,status) values (#{planetId},#{userId},#{ownerId},#{reason},2,0) ")
     int applyForPlanet(ApplyForPlanetDto applyForPlanetDto);
