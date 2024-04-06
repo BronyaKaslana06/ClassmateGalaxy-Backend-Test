@@ -27,7 +27,7 @@ public interface LikesMapper extends BaseMapper<Likes> {
     void cancelLike(int userId, int postId);
 
     @Select("SELECT count(*) from likes where user_id=#{userId} and content_type=2 and content_id=#{commentId} limit 1")
-    int checkIfLikedComment(Integer commentId, int userId);
+    int checkIfLikedComment(int userId ,int commentId);
 
     @Insert("INSERT INTO likes (user_id,content_id,content_type) values (#{commentId},#{commentId},2)")
     void addCommentLikes(int userId, int commentId);
