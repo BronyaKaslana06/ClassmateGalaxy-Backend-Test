@@ -145,8 +145,10 @@ public class PostServiceImpl implements PostService {
                     replyInfoDto.setLikeNum(reply.getLikeNum());
 
                     Comment parent=commentMap.get(reply.getParentId());
-                    replyInfoDto.setPosterId(parent.getUserId());
-                    replyInfoDto.setPosterName(userMap.get(parent.getUserId()).getNickname());
+                    if(parent!=null) {
+                        replyInfoDto.setPosterId(parent.getUserId());
+                        replyInfoDto.setPosterName(userMap.get(parent.getUserId()).getNickname());
+                    }
                     replyInfoDto.setRepliedId(reply.getUserId());
                     replyInfoDto.setReview(reply.getContent());
 //                    User replier = userMapper.selectById(reply.getUserId());
