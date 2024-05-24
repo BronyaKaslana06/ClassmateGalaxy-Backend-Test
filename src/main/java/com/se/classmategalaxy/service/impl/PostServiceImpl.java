@@ -131,7 +131,7 @@ public class PostServiceImpl implements PostService {
                 commentInfo.setPosterName(poster.getNickname());
                 commentInfo.setPosterAvatar(poster.getHeadPhoto());
                 commentInfo.setDeletePermission(userId==poster.getUserId());
-                commentInfo.setIsLiked(likesMapper.checkIfLikedComment(comment.getCommentId(),userId)>0);
+                commentInfo.setIsLiked(likesMapper.checkIfLikedComment(userId,comment.getCommentId())>0);
                 commentInfos.add(commentInfo);
 
                 HashMap<String,Object> replyInfo=new HashMap<>();
@@ -145,8 +145,10 @@ public class PostServiceImpl implements PostService {
                     replyInfoDto.setLikeNum(reply.getLikeNum());
 
                     Comment parent=commentMap.get(reply.getParentId());
-                    replyInfoDto.setPosterId(parent.getUserId());
-                    replyInfoDto.setPosterName(userMap.get(parent.getUserId()).getNickname());
+                    if(parent!=null) {
+                        replyInfoDto.setPosterId(parent.getUserId());
+                        replyInfoDto.setPosterName(userMap.get(parent.getUserId()).getNickname());
+                    }
                     replyInfoDto.setRepliedId(reply.getUserId());
                     replyInfoDto.setReview(reply.getContent());
 //                    User replier = userMapper.selectById(reply.getUserId());
@@ -155,7 +157,7 @@ public class PostServiceImpl implements PostService {
 
                     replyInfoDto.setRepliedAvatar(replier.getHeadPhoto());
                     replyInfoDto.setDeletePermission(userId == replier.getUserId());
-                    replyInfoDto.setIsLiked(likesMapper.checkIfLikedComment(reply.getCommentId(), userId) > 0);
+                    replyInfoDto.setIsLiked(likesMapper.checkIfLikedComment(userId,reply.getCommentId()) > 0);
                     replyInfos.add(replyInfoDto);
                 }
                 replyInfo.put("ReplyList",replyInfos);
