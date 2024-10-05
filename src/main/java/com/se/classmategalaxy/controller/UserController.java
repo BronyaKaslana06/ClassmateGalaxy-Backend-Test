@@ -4,6 +4,7 @@ import com.se.classmategalaxy.dto.*;
 import com.se.classmategalaxy.entity.User;
 import com.se.classmategalaxy.service.UserRegisterValidatorService;
 import com.se.classmategalaxy.service.UserService;
+import com.se.classmategalaxy.util.TokenUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -98,13 +99,16 @@ public class UserController {
             else{
                 loginResult.put("message","Login time failed to update!");
             }
+
+            String token = TokenUtil.generateToken(user);
+            loginResult.put("token", token);
         }
         else{
-            //密码正确，登录成功
+            //登录失败
             loginResult.put("status",0);
             loginResult.put("message","Incorrect username or password!Please check and try again.");
         }
-        return  loginResult;
+        return loginResult;
     }
 
 

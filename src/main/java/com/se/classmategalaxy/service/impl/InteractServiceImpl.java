@@ -6,11 +6,13 @@ import com.se.classmategalaxy.mapper.*;
 import com.se.classmategalaxy.service.CommentService;
 import com.se.classmategalaxy.service.InteractService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author wyx20
@@ -34,21 +36,42 @@ public class InteractServiceImpl implements InteractService {
     @Autowired
     private CommentMapper commentMapper;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    private static final String LIKE_PREFIX = "post:like:";
+
     @Override
     public HashMap<String, Object> addPostInteract(int userId, int postId, int clickType) {
         HashMap<String,Object> result=new HashMap<>();
+        if(postMapper.selectById(postId) == null) {
+            result.put("status", 1);
+            result.put("message", "帖子不存在");
+            return result;
+        }
         if(clickType==1){
-            if(likesMapper.checkIfLiked(userId,postId)>0){
-                result.put("status",0);
-                result.put("message","已点赞，无法重复点赞");
+            String key = LIKE_PREFIX + postId + ":" + userId;
+            Boolean isLiked = redisTemplate.hasKey(key);
+            if (Boolean.TRUE.equals(isLiked)) {
+                result.put("status", 0);
+                result.put("message", "已点赞，无法重复点赞");
             }
             else{
-                likesMapper.addPostLikes(userId,postId);
-                //新增点赞数并更新返回likeNum
-                postMapper.addLikesNum(postId);
-                result.put("likeNum",postMapper.selectById(postId).getLikeNum());
-                result.put("status",1);
-                result.put("message","新增点赞成功");
+                if (likesMapper.checkIfLiked(userId,postId) > 0) {
+                    result.put("status", 0);
+                    result.put("message", "已点赞，无法重复点赞");
+                }
+                else {
+                    // Perform database operations
+                    likesMapper.addPostLikes(userId, postId);
+                    postMapper.addLikesNum(postId);
+
+                    // Update Redis cache
+                    redisTemplate.opsForValue().set(key, "1", 1, TimeUnit.DAYS); // Cache for one day
+                    result.put("likeNum", postMapper.selectById(postId).getLikeNum());
+                    result.put("status", 0);
+                    result.put("message", "新增点赞成功");
+                }
             }
         }
         else if(clickType==2){
@@ -79,6 +102,10 @@ public class InteractServiceImpl implements InteractService {
     @Override
     public HashMap<String, Object> cancelLike(int userId, int postId) {
         HashMap<String,Object> result=new HashMap<>();
+        String key = LIKE_PREFIX + postId + ":" + userId;
+        if(Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+            redisTemplate.delete(key);
+        }
         likesMapper.cancelLike(userId,postId);
         postMapper.decreaseLikeNum(postId);
         result.put("likeNum",postMapper.selectById(postId).getLikeNum());
