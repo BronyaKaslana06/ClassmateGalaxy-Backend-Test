@@ -66,8 +66,19 @@ public class InteractServiceImpl implements InteractService {
                     likesMapper.addPostLikes(userId, postId);
                     postMapper.addLikesNum(postId);
 
-                    // Update Redis cache
-                    redisTemplate.opsForValue().set(key, "1", 1, TimeUnit.DAYS); // Cache for one day
+                    String redisKey = "post_likes_ranking";
+                    String member = String.valueOf(postId);
+
+                    //检查member帖子是否在redis中存在
+                    Double currentLikes = redisTemplate.opsForZSet().score(redisKey, member);
+
+                    if(currentLikes == null) {
+                        redisTemplate.opsForZSet().add(redisKey, member, 1);
+                    }
+                    else {
+                        redisTemplate.opsForZSet().incrementScore(redisKey, member, 1);
+                    }
+
                     result.put("likeNum", postMapper.selectById(postId).getLikeNum());
                     result.put("status", 0);
                     result.put("message", "新增点赞成功");

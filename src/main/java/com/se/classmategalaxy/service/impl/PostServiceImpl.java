@@ -7,6 +7,7 @@ import com.se.classmategalaxy.entity.User;
 import com.se.classmategalaxy.mapper.*;
 import com.se.classmategalaxy.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -44,6 +45,9 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private FollowMapper followMapper;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public HashMap<String, Object> getPlanetPosts(int planetId, int pageNum, int pageSize,int userId) {
@@ -275,21 +279,34 @@ public class PostServiceImpl implements PostService {
     public HashMap<String, Object> getTopPost() {
         HashMap<String,Object> result=new HashMap<>();
         List<Post> postList=postMapper.getTopPost(7);
-        List<PostBriefDto> postBriefs=new ArrayList<>();
-        for(Post post : postList){
-            PostBriefDto postBrief = new PostBriefDto();
-            postBrief.setTitle(post.getTitle());
-            postBrief.setPostId(post.getPostId());
-            postBrief.setUserId(post.getAuthorId());
-            postBrief.setViewNum(post.getViewNum());
-            postBrief.setAuthorName(userMapper.selectById(post.getAuthorId()).getNickname());
-            postBrief.setPlanetId(post.getPlanetId());
-            postBrief.setPlanetName(planetMapper.selectById(post.getPlanetId()).getPlanetName());
-            postBriefs.add(postBrief);
+
+        String redisKey = "post_likes_ranking";
+        Set<Object> topPostIds = redisTemplate.opsForZSet().reverseRange(redisKey, 0, 6);
+
+        List<PostBriefDto> postBriefs = new ArrayList<>();
+        if(topPostIds != null) {
+            for(Object postId : topPostIds) {
+                Post post = postMapper.selectById(Integer.parseInt((String) postId));
+                if(post != null) {
+                    PostBriefDto postBrief = new PostBriefDto();
+                    postBrief.setTitle(post.getTitle());
+                    postBrief.setPostId(post.getPostId());
+                    postBrief.setUserId(post.getAuthorId());
+                    postBrief.setViewNum(post.getViewNum());
+                    postBrief.setAuthorName(userMapper.selectById(post.getAuthorId()).getNickname());
+                    postBrief.setPlanetId(post.getPlanetId());
+                    postBrief.setPlanetName(planetMapper.selectById(post.getPlanetId()).getPlanetName());
+                    postBriefs.add(postBrief);
+                }
+            }
+            result.put("postList",postBriefs);
+            result.put("status",1);
+            result.put("message","获取成功");
         }
-        result.put("postList",postBriefs);
-        result.put("status",1);
-        result.put("message","获取成功");
+        else {
+            result.put("status", 0);
+            result.put("message", "无靠前的帖子");
+        }
         return result;
     }
 

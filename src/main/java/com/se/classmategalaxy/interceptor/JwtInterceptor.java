@@ -16,6 +16,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class JwtInterceptor implements HandlerInterceptor {
@@ -23,8 +25,10 @@ public class JwtInterceptor implements HandlerInterceptor {
     UserService userService;
     @Autowired
     UserMapper userMapper;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
         // 如果不是映射到方法直接通过
         if(!(handler instanceof HandlerMethod)){
             return true;
